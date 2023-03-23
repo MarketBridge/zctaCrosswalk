@@ -1,23 +1,18 @@
 #' Returns a ZCTA Crosswalk as a tibble
 #'
-#' By default, returns the Census Bureau's 2010 ZCTA Country Relationship file
-#' as a tibble.
-#' @param url The URL of the file to parse. Defaults to the 2020 ZCTA to County Relationship File
-#' @param process_file If TRUE, remove NA rows, unused columns, etc.
-#' @seealso Zip Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
+#' Returns the Census Bureau's 2020 ZCTA Country Relationship file
+#' as a tibble. This function is included so that users can see how the crosswalk
+#' was generated. It is not intended for use by end users.
+#' @seealso All 2020 Zip Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
 #' @importFrom readr read_delim
 #' @importFrom dplyr rename select mutate filter
 #' @importFrom rlang .data
 #' @importFrom stringr str_sub
 #' @export
-get_zcta_crosswalk = function(
-    url          = "https://rb.gy/h0l5cs",
-    process_file = TRUE) {
+get_zcta_crosswalk = function() {
 
+  url = "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt"
   zcta_crosswalk = read_delim(file = url, delim = "|")
-  if (!process_file) {
-    return(zcta_crosswalk)
-  }
 
   # Select and rename columns
   zcta_crosswalk = zcta_crosswalk |>
