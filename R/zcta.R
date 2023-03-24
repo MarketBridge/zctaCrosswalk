@@ -79,63 +79,32 @@ get_zctas_in_county = function(counties) {
 #' @export
 #' @importFrom dplyr filter pull
 get_zctas_in_state = function(state_fips) {
+  data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
   # The {{ }} ("embrace") means "use the variable, not the column name"
   zcta_crosswalk |>
     filter(.data$state_fips %in% {{state_fips}}) |>
     pull(.data$zcta)
 }
-#
-# get_state_fips_from_state_names = function(state_names) {
-#
-#   stopifnot(all(state_names %in% fips_state_table$name))
-#
-#   fips_state_table |>
-#     filter(name %in% state_names) |>
-#     pull(fips)
-# }
-#
-# get_state_fips_from_state_abbs = function(state_abbs) {
-#
-#   stopifnot(all(state_abbs %in% fips_state_table$abb))
-#
-#   fips_state_table |>
-#     filter(abb %in% state_abbs) |>
-#     pull(fips)
-# }
-#
-#
-# # TODO: Use tidy_census::fips_codes instead of this. It also i
-# # TODO: Maybe I should copy from the this site instead?
-# # https://www.bls.gov/respondents/mwr/electronic-data-interchange/appendix-d-usps-state-abbreviations-and-fips-codes.htm
-#
-#
-# # Taken from https://github.com/walkerke/tidycensus/blob/3be2e7e30f6168f403902f89e4d87eab6402853a/R/zzz.r#L8
-# fips_state_table <- structure(list(
-#   abb = c("ak", "al", "ar", "as", "az", "ca", "co",
-#           "ct", "dc", "de", "fl", "ga", "gu", "hi", "ia", "id", "il", "in",
-#           "ks", "ky", "la", "ma", "md", "me", "mi", "mn", "mo", "ms", "mt",
-#           "nc", "nd", "ne", "nh", "nj", "nm", "nv", "ny", "oh", "ok", "or",
-#           "pa", "pr", "ri", "sc", "sd", "tn", "tx", "ut", "va", "vi", "vt",
-#           "wa", "wi", "wv", "wy", "mp"),
-#   fips = c("02", "01", "05", "60", "04",
-#            "06", "08", "09", "11", "10", "12", "13", "66", "15", "19", "16",
-#            "17", "18", "20", "21", "22", "25", "24", "23", "26", "27", "29",
-#            "28", "30", "37", "38", "31", "33", "34", "35", "32", "36", "39",
-#            "40", "41", "42", "72", "44", "45", "46", "47", "48", "49", "51",
-#            "78", "50", "53", "55", "54", "56", "69"),
-#   name = c("alaska", "alabama",
-#            "arkansas", "american samoa", "arizona", "california", "colorado",
-#            "connecticut", "district of columbia", "delaware", "florida",
-#            "georgia", "guam", "hawaii", "iowa", "idaho", "illinois", "indiana",
-#            "kansas", "kentucky", "louisiana", "massachusetts", "maryland",
-#            "maine", "michigan", "minnesota", "missouri", "mississippi",
-#            "montana", "north carolina", "north dakota", "nebraska", "new hampshire",
-#            "new jersey", "new mexico", "nevada", "new york", "ohio", "oklahoma",
-#            "oregon", "pennsylvania", "puerto rico", "rhode island", "south carolina",
-#            "south dakota", "tennessee", "texas", "utah", "virginia", "virgin islands",
-#            "vermont", "washington", "wisconsin", "west virginia", "wyoming", "northern mariana islands")),
-#   .Names = c("abb", "fips", "name"),
-#   row.names = c(NA, -56L),
-#   class = "data.frame")
-# fips_state_table = as_tibble(fips_state_table)
+
+#' Return metadata on a ZCTA
+#'
+#' Given a vector of Zip Code Tabulation Areas (ZCTAs), return what
+#' state and county they are in. NOTE: A single ZCTA can span multiple
+#' states and counties.
+#'
+#' @param zctas A vector of ZCTAs
+#' @examples
+#' get_zcta_metadata("90210")
+#'
+#' get_zcta_metadata("39573")
+#' @export
+#' @importFrom dplyr filter
+get_zcta_metadata = function(zctas) {
+  data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
+
+  stopifnot(all(zctas %in% zcta_crosswalk$zcta))
+
+  zcta_crosswalk |>
+    filter(.data$zcta %in% zctas)
+}
