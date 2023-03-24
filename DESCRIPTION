@@ -1,10 +1,10 @@
 Package: zctaCrosswalk
 Type: Package
-Title: Map Census ZIP Code Tabulation Areas (ZCTAs) to State and Counties
+Title: Crosswalk Between 2020 Census ZIP Code Tabulation Areas (ZCTAs), States and Counties
 Version: 0.1.0
 Author: Ari Lamstein
 Maintainer: Ari Lamstein <alamstein@market-bridge.com>
-Description: Contains the US Census Bureau's 2010 ZCTA to County Relationship 
+Description: Contains the US Census Bureau's 2020 ZCTA to County Relationship 
     File, as well as convenience functions to translate between States, Counties
     and ZIP Code Tabulation Areas (ZCTAs).
 License: MIT + file LICENSE
@@ -15,4 +15,6 @@ Imports:
     dplyr,
     rlang,
     stringr
+Depends:
+    R (>= 3.5.0)
 RoxygenNote: 7.2.3

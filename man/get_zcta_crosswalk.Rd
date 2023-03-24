@@ -8,7 +8,8 @@ get_zcta_crosswalk()
 }
 \description{
 Returns the Census Bureau's 2020 ZCTA Country Relationship file
-as a tibble.
+as a tibble. This function is included so that users can see how the crosswalk
+was generated. It is not intended for use by end users.
 }
 \seealso{
 All 2020 Zip Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
