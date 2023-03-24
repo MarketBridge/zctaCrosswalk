@@ -59,30 +59,32 @@ get_zctas_in_county = function(counties) {
     filter(.data$county_fips %in% counties) |>
     pull(.data$zcta)
 }
-#
-# get_zctas_in_county("06075") # San Francisco
-#
-# get_zctas_in_state = function(state_fips  = NULL,
-#                               state_names = NULL,
-#                               state_abbs  = NULL) {
-#
-#   # User is required to supply exactly one of these parameters
-#   num_params = sum(!is.null(state_fips),
-#                    !is.null(state_names),
-#                    !is.null(state_abbs))
-#   stopifnot(num_params == 1)
-#
-#   if (!is.null(state_names)) {
-#     state_fips = get_state_fips_from_state_names(state_names)
-#   } else if (!is.null(state_abbs)) {
-#     state_fips = get_state_fips_from_state_abbs(state_abbs)
-#   }
-#
-#   # The {{ }} ("embrace") means "use the variable, not the column name"
-#   zcta_crosswalk |>
-#     filter(state_fips %in% {{state_fips}}) |>
-#     pull(zcta)
-# }
+
+#' Return the ZCTAs in a vector of states
+#'
+#' Given a vector of states, return the Zip Code Tabulation Areas (ZCTAs)
+#' in those states
+#'
+#' @param state_fips A vector of Counties as FIPS codes. Must be 2-digits as characters - see examples.
+#' @examples
+#' # 06 is California
+#' ca_zctas = get_zctas_in_state("06")
+#' length(ca_zctas)
+#' head(ca_zctas)
+#'
+#' # "36" is New York
+#' ny_ca_zctas = get_zctas_in_state(c("36", "06"))
+#' length(ny_ca_zctas)
+#' head(ny_ca_zctas)
+#' @export
+#' @importFrom dplyr filter pull
+get_zctas_in_state = function(state_fips) {
+
+  # The {{ }} ("embrace") means "use the variable, not the column name"
+  zcta_crosswalk |>
+    filter(.data$state_fips %in% {{state_fips}}) |>
+    pull(.data$zcta)
+}
 #
 # get_state_fips_from_state_names = function(state_names) {
 #

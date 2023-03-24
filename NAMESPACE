@@ -2,6 +2,7 @@
 
 export(get_zcta_crosswalk)
 export(get_zctas_in_county)
+export(get_zctas_in_state)
 importFrom(dplyr,filter)
 importFrom(dplyr,mutate)
 importFrom(dplyr,pull)
