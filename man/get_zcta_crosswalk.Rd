@@ -2,7 +2,7 @@
 % Please edit documentation in R/zcta.R
 \name{get_zcta_crosswalk}
 \alias{get_zcta_crosswalk}
-\title{Returns a ZCTA Crosswalk as a tibble}
+\title{Returns a ZCTA crosswalk as a tibble}
 \usage{
 get_zcta_crosswalk()
 }

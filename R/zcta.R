@@ -1,4 +1,8 @@
-#' Returns a ZCTA Crosswalk as a tibble
+# What a horrible world we live in, where code like this is necessary.
+# See https://community.rstudio.com/t/how-to-solve-no-visible-binding-for-global-variable-note/28887
+globalVariables("zcta_crosswalk")
+
+#' Returns a ZCTA crosswalk as a tibble
 #'
 #' Returns the Census Bureau's 2020 ZCTA Country Relationship file
 #' as a tibble. This function is included so that users can see how the crosswalk
@@ -31,14 +35,30 @@ get_zcta_crosswalk = function() {
     filter(!is.na(.data$zcta))
 }
 
-#
-# get_zctas_in_county = function(counties) {
-#   stopifnot(all(counties %in% zcta_crosswalk$county_fips))
-#
-#   zcta_crosswalk |>
-#     filter(county_fips %in% counties) |>
-#     pull(zcta)
-# }
+#' Return the ZCTAs in a vector of counties
+#'
+#' Given a vector of counties, return the Zip Code Tabulation Areas (ZCTAs)
+#' in those counties
+#'
+#' @param counties A vector of Counties as FIPS codes. Must be 5-digits as characters - see examples.
+#' @examples
+#' # 06075 is San Francisco County, California
+#' get_zctas_in_county("06075")
+#'
+#' # "36059" is Nassau County, New York
+#' get_zctas_in_county(c("06075", "36059"))
+#' @importFrom utils data
+#' @importFrom dplyr pull filter
+#' @export
+get_zctas_in_county = function(counties) {
+  data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
+
+  stopifnot(all(counties %in% zcta_crosswalk$county_fips))
+
+  zcta_crosswalk |>
+    filter(.data$county_fips %in% counties) |>
+    pull(.data$zcta)
+}
 #
 # get_zctas_in_county("06075") # San Francisco
 #
