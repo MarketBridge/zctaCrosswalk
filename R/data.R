@@ -7,3 +7,14 @@
 #' @name zcta_crosswalk
 #' @usage data(zcta_crosswalk)
 NULL
+
+#' Metadata for Each "State" in zcta_crosswalk 
+#'
+#' The complete dataset in ?zcta_crosswalk contains information on 56 state and
+#' state-equivalents. This dataframe contains the full name of each "state", plus
+#' its USPS abbreviation and FIPS code.
+#'
+#' @docType data
+#' @name state_names
+#' @usage data(state_names)
+NULL
