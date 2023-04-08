@@ -14,7 +14,8 @@ Given a vector of states, return the Zip Code Tabulation Areas (ZCTAs)
 in those states.
 }
 \examples{
-ca_zctas = get_zctas_by_state("california")
+# Not case sensitive when using state names
+ca_zctas = get_zctas_by_state("CaLiFoRNia")
 length(ca_zctas)
 head(ca_zctas)
 
@@ -23,17 +24,17 @@ ca_zctas = get_zctas_by_state("06")
 length(ca_zctas)
 head(ca_zctas)
 
-# 6 is OK too
-ca_zctas = get_zctas_by_state("06")
+# 6 is OK too - sometimes people use numbers for FIPS codes
+ca_zctas = get_zctas_by_state(6)
 length(ca_zctas)
 head(ca_zctas)
 
-# I'll even take "CA"
+# USPS state abbreviations are also OK 
 ca_zctas = get_zctas_by_state("CA")
 length(ca_zctas)
 head(ca_zctas)
 
-# > 1 at a time is OK too
+# Multiple states at the same time are also OK
 ca_ny_zctas = get_zctas_by_state(c("CA", "NY"))
 length(ca_ny_zctas)
 head(ca_ny_zctas)

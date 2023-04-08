@@ -68,7 +68,8 @@ get_zctas_in_county = function(counties) {
 #' @param states A vector of States. Can be FIPS Codes (either character or numeric), names or USPS abbreviations.
 #' 
 #' @examples
-#' ca_zctas = get_zctas_by_state("california")
+#' # Not case sensitive when using state names
+#' ca_zctas = get_zctas_by_state("CaLiFoRNia")
 #' length(ca_zctas)
 #' head(ca_zctas)
 #' 
@@ -77,17 +78,17 @@ get_zctas_in_county = function(counties) {
 #' length(ca_zctas)
 #' head(ca_zctas)
 #'
-#' # 6 is OK too
-#' ca_zctas = get_zctas_by_state("06")
+#' # 6 is OK too - sometimes people use numbers for FIPS codes
+#' ca_zctas = get_zctas_by_state(6)
 #' length(ca_zctas)
 #' head(ca_zctas)
 #' 
-#' # I'll even take "CA"
+#' # USPS state abbreviations are also OK 
 #' ca_zctas = get_zctas_by_state("CA")
 #' length(ca_zctas)
 #' head(ca_zctas)
 #'
-#' # > 1 at a time is OK too
+#' # Multiple states at the same time are also OK
 #' ca_ny_zctas = get_zctas_by_state(c("CA", "NY"))
 #' length(ca_ny_zctas)
 #' head(ca_ny_zctas)
@@ -101,8 +102,9 @@ get_zctas_in_county = function(counties) {
 get_zctas_by_state = function(states) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
-  if (all(states %in% zcta_crosswalk$state_name)) {
+  if (all(tolower(states) %in% zcta_crosswalk$state_name)) {
     col = "state_name"
+    states = tolower(states)
   } else if (all(states %in% zcta_crosswalk$state_usps)) {
     col = "state_usps"
   } else if (all(states %in% zcta_crosswalk$state_fips)) {
