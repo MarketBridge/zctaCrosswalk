@@ -8,6 +8,7 @@
 data(zcta_crosswalk)
 }
 \description{
-Retrieved via the function get_zcta_crosswalk. Columns are ZCTA, county_fips,
-county_name and state_fips.
+The primary data was obtained via the function get_zcta_crosswalk. There are 3 types of columns: ZCTA,
+state and county. Where data in practice sometimes appears as both character and numeric, columns for both are 
+provided.
 }
