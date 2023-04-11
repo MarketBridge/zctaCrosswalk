@@ -10,7 +10,7 @@ get_zctas_by_county(counties)
 \item{counties}{A vector of Counties as FIPS codes. Must be 5-digits as characters - see examples.}
 }
 \description{
-Given a vector of counties, return the Zip Code Tabulation Areas (ZCTAs)
+Given a vector of counties, return the ZIP Code Tabulation Areas (ZCTAs)
 in those counties
 }
 \examples{

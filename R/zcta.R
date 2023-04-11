@@ -7,7 +7,7 @@ globalVariables("zcta_crosswalk")
 #' Returns the Census Bureau's 2020 ZCTA Country Relationship file
 #' as a tibble. This function is included so that users can see how the crosswalk
 #' was generated. It is not intended for use by end users.
-#' @seealso All 2020 Zip Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
+#' @seealso All 2020 ZIP Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
 #' @importFrom readr read_delim
 #' @importFrom dplyr rename select mutate filter
 #' @importFrom rlang .data
@@ -37,7 +37,7 @@ get_zcta_crosswalk = function() {
 
 #' Return the ZCTAs in a vector of counties
 #'
-#' Given a vector of counties, return the Zip Code Tabulation Areas (ZCTAs)
+#' Given a vector of counties, return the ZIP Code Tabulation Areas (ZCTAs)
 #' in those counties
 #'
 #' @param counties A vector of Counties as FIPS codes. Must be 5-digits as characters - see examples.
@@ -72,7 +72,7 @@ get_zctas_by_county = function(counties) {
 
 #' Return the ZCTAs in a vector of states
 #'
-#' Given a vector of states, return the Zip Code Tabulation Areas (ZCTAs)
+#' Given a vector of states, return the ZIP Code Tabulation Areas (ZCTAs)
 #' in those states.
 #'
 #' @param states A vector of States. Can be FIPS Codes (either character or numeric), names or USPS abbreviations.
@@ -134,7 +134,7 @@ get_zctas_by_state = function(states) {
 
 #' Return metadata on a ZCTA
 #'
-#' Given a vector of Zip Code Tabulation Areas (ZCTAs), return what
+#' Given a vector of ZIP Code Tabulation Areas (ZCTAs), return what
 #' state and county they are in. NOTE: A single ZCTA can span multiple
 #' states and counties.
 #'

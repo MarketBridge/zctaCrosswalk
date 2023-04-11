@@ -12,5 +12,5 @@ as a tibble. This function is included so that users can see how the crosswalk
 was generated. It is not intended for use by end users.
 }
 \seealso{
-All 2020 Zip Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
+All 2020 ZIP Code Tabulation Area 5-Digit (ZCTA5) Relationship Files: https://rb.gy/h0l5cs
 }

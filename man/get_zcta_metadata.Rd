@@ -10,7 +10,7 @@ get_zcta_metadata(zctas)
 \item{zctas}{A vector of ZCTAs}
 }
 \description{
-Given a vector of Zip Code Tabulation Areas (ZCTAs), return what
+Given a vector of ZIP Code Tabulation Areas (ZCTAs), return what
 state and county they are in. NOTE: A single ZCTA can span multiple
 states and counties.
 }
