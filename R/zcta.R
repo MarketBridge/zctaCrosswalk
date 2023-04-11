@@ -50,10 +50,22 @@ get_zcta_crosswalk = function() {
 #' @importFrom utils data
 #' @importFrom dplyr pull filter
 #' @export
-get_zctas_in_county = function(counties) {
+get_zctas_by_county = function(counties) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
-  stopifnot(all(counties %in% zcta_crosswalk$county_fips))
+  if (all(tolower(counties) %in% zcta_crosswalk$county_name)) {
+    col = "county_name"
+    states = tolower(states)
+  } else if (all(states %in% zcta_crosswalk$state_usps)) {
+    col = "state_usps"
+  } else if (all(states %in% zcta_crosswalk$state_fips)) {
+    col = "state_fips"
+  } else if (all(states %in% zcta_crosswalk$state_fips_numeric)) {
+    col = "state_fips_numeric"
+  } else {
+    stop("User supplied bad data! Type 'get_zctas_by_state' to understand how this function works.")
+  }
+  
 
   zcta_crosswalk |>
     filter(.data$county_fips %in% counties) |>
