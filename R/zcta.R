@@ -50,10 +50,22 @@ get_zcta_crosswalk = function() {
 #' @importFrom utils data
 #' @importFrom dplyr pull filter
 #' @export
-get_zctas_in_county = function(counties) {
+get_zctas_by_county = function(counties) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
-  stopifnot(all(counties %in% zcta_crosswalk$county_fips))
+  if (all(tolower(counties) %in% zcta_crosswalk$county_name)) {
+    col = "county_name"
+    states = tolower(states)
+  } else if (all(states %in% zcta_crosswalk$state_usps)) {
+    col = "state_usps"
+  } else if (all(states %in% zcta_crosswalk$state_fips)) {
+    col = "state_fips"
+  } else if (all(states %in% zcta_crosswalk$state_fips_numeric)) {
+    col = "state_fips_numeric"
+  } else {
+    stop("User supplied bad data! Type 'get_zctas_by_state' to understand how this function works.")
+  }
+  
 
   zcta_crosswalk |>
     filter(.data$county_fips %in% counties) |>
@@ -63,28 +75,63 @@ get_zctas_in_county = function(counties) {
 #' Return the ZCTAs in a vector of states
 #'
 #' Given a vector of states, return the Zip Code Tabulation Areas (ZCTAs)
-#' in those states
+#' in those states.
 #'
-#' @param state_fips A vector of Counties as FIPS codes. Must be 2-digits as characters - see examples.
+#' @param states A vector of States. Can be FIPS Codes (either character or numeric), names or USPS abbreviations.
+#' 
 #' @examples
-#' # 06 is California
-#' ca_zctas = get_zctas_in_state("06")
+#' # Not case sensitive when using state names
+#' ca_zctas = get_zctas_by_state("CaLiFoRNia")
+#' length(ca_zctas)
+#' head(ca_zctas)
+#' 
+#' # "06" is the FIPS code for California
+#' ca_zctas = get_zctas_by_state("06")
 #' length(ca_zctas)
 #' head(ca_zctas)
 #'
-#' # "36" is New York
-#' ny_ca_zctas = get_zctas_in_state(c("36", "06"))
-#' length(ny_ca_zctas)
-#' head(ny_ca_zctas)
+#' # 6 is OK too - sometimes people use numbers for FIPS codes
+#' ca_zctas = get_zctas_by_state(6)
+#' length(ca_zctas)
+#' head(ca_zctas)
+#' 
+#' # USPS state abbreviations are also OK 
+#' ca_zctas = get_zctas_by_state("CA")
+#' length(ca_zctas)
+#' head(ca_zctas)
+#'
+#' # Multiple states at the same time are also OK
+#' ca_ny_zctas = get_zctas_by_state(c("CA", "NY"))
+#' length(ca_ny_zctas)
+#' head(ca_ny_zctas)
+#' 
+#' \dontrun{
+#' # But you can't mix types in a single request
+#' ny_ca_zctas = get_zctas_in_state(c("06", "NY"))
+#' }
 #' @export
-#' @importFrom dplyr filter pull
-get_zctas_in_state = function(state_fips) {
+#' @importFrom dplyr filter pull sym
+get_zctas_by_state = function(states) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
-  # The {{ }} ("embrace") means "use the variable, not the column name"
+  if (all(tolower(states) %in% zcta_crosswalk$state_name)) {
+    col = "state_name"
+    states = tolower(states)
+  } else if (all(states %in% zcta_crosswalk$state_usps)) {
+    col = "state_usps"
+  } else if (all(states %in% zcta_crosswalk$state_fips)) {
+    col = "state_fips"
+  } else if (all(states %in% zcta_crosswalk$state_fips_numeric)) {
+    col = "state_fips_numeric"
+  } else {
+    stop("User supplied bad data! Type 'get_zctas_by_state' to understand how this function works.")
+  }
+  
+  print(paste("Using column", col))
   zcta_crosswalk |>
-    filter(.data$state_fips %in% {{state_fips}}) |>
-    pull(.data$zcta)
+    filter(!!sym(col) %in% states) |>
+    pull(.data$zcta) |>
+    unique()
 }
 
 #' Return metadata on a ZCTA
