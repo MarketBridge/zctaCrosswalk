@@ -43,10 +43,10 @@ get_zcta_crosswalk = function() {
 #' @param counties A vector of Counties as FIPS codes. Must be 5-digits as characters - see examples.
 #' @examples
 #' # 06075 is San Francisco County, California
-#' get_zctas_in_county("06075")
+#' get_zctas_by_county("06075")
 #'
 #' # "36059" is Nassau County, New York
-#' get_zctas_in_county(c("06075", "36059"))
+#' get_zctas_by_county(c("06075", "36059"))
 #' @importFrom utils data
 #' @importFrom dplyr pull filter
 #' @export
@@ -55,21 +55,19 @@ get_zctas_by_county = function(counties) {
 
   if (all(tolower(counties) %in% zcta_crosswalk$county_name)) {
     col = "county_name"
-    states = tolower(states)
-  } else if (all(states %in% zcta_crosswalk$state_usps)) {
-    col = "state_usps"
-  } else if (all(states %in% zcta_crosswalk$state_fips)) {
-    col = "state_fips"
-  } else if (all(states %in% zcta_crosswalk$state_fips_numeric)) {
-    col = "state_fips_numeric"
+    counties = tolower(counties)
+  } else if (all(counties %in% zcta_crosswalk$county_fips)) {
+    col = "county_fips"
+  } else if (all(counties %in% zcta_crosswalk$county_fips_numeric)) {
+    col = "county_fips_numeric"
   } else {
-    stop("User supplied bad data! Type 'get_zctas_by_state' to understand how this function works.")
+    stop("User supplied bad data! Type 'get_zctas_by_county' to understand how this function works.")
   }
-  
 
   zcta_crosswalk |>
-    filter(.data$county_fips %in% counties) |>
-    pull(.data$zcta)
+    filter(!!sym(col) %in% counties) |>
+    pull(.data$zcta) |>
+    unique()
 }
 
 #' Return the ZCTAs in a vector of states
@@ -78,13 +76,13 @@ get_zctas_by_county = function(counties) {
 #' in those states.
 #'
 #' @param states A vector of States. Can be FIPS Codes (either character or numeric), names or USPS abbreviations.
-#' 
+#'
 #' @examples
 #' # Not case sensitive when using state names
 #' ca_zctas = get_zctas_by_state("CaLiFoRNia")
 #' length(ca_zctas)
 #' head(ca_zctas)
-#' 
+#'
 #' # "06" is the FIPS code for California
 #' ca_zctas = get_zctas_by_state("06")
 #' length(ca_zctas)
@@ -94,8 +92,8 @@ get_zctas_by_county = function(counties) {
 #' ca_zctas = get_zctas_by_state(6)
 #' length(ca_zctas)
 #' head(ca_zctas)
-#' 
-#' # USPS state abbreviations are also OK 
+#'
+#' # USPS state abbreviations are also OK
 #' ca_zctas = get_zctas_by_state("CA")
 #' length(ca_zctas)
 #' head(ca_zctas)
@@ -104,7 +102,7 @@ get_zctas_by_county = function(counties) {
 #' ca_ny_zctas = get_zctas_by_state(c("CA", "NY"))
 #' length(ca_ny_zctas)
 #' head(ca_ny_zctas)
-#' 
+#'
 #' \dontrun{
 #' # But you can't mix types in a single request
 #' ny_ca_zctas = get_zctas_in_state(c("06", "NY"))
@@ -126,7 +124,7 @@ get_zctas_by_state = function(states) {
   } else {
     stop("User supplied bad data! Type 'get_zctas_by_state' to understand how this function works.")
   }
-  
+
   print(paste("Using column", col))
   zcta_crosswalk |>
     filter(!!sym(col) %in% states) |>

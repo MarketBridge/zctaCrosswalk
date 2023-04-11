@@ -11,12 +11,22 @@ also provides [Relationship Files](https://www.census.gov/geographies/reference-
 
 This package provides the "2020 ZCTA to County Relationship File" as a tibble, as well as convenience functions for working with it.
 
+# Installation
+
+`zctaCrosswalk` is not currently available on CRAN. The latest stable version is v1.0.0 and can be 
+installed like this:
+
+```
+library(devtools)
+install_github('https://github.com/MarketBridge/zctaCrosswalk/releases/tag/v1.0.0')
+```
+
 # Example Usage
 
 The most useful functions in this package are:
 
- * `?get_zctas_in_county`
- * `?get_zctas_in_state`
+ * `?get_zctas_by_county`
+ * `?get_zctas_by_state`
  * `?get_zcta_metadata`
 
 The Relationship File is stored as the tibble `zcta_crosswalk`. Note that the file has been processed to make it easier to work with. To see the processing,

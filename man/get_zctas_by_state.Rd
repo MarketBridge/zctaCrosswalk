@@ -29,7 +29,7 @@ ca_zctas = get_zctas_by_state(6)
 length(ca_zctas)
 head(ca_zctas)
 
-# USPS state abbreviations are also OK 
+# USPS state abbreviations are also OK
 ca_zctas = get_zctas_by_state("CA")
 length(ca_zctas)
 head(ca_zctas)
