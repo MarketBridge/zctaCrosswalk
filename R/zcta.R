@@ -38,10 +38,12 @@ get_zcta_crosswalk = function() {
 #' Return the ZCTAs in a vector of counties
 #'
 #' Given a vector of counties, return the ZIP Code Tabulation Areas (ZCTAs)
-#' in those counties
+#' in those counties. Note counties must be identified by FIPS code (character
+#' or numeric) in this function because county names are not unique between states.
+#' For example, 30 states have a county named "Washington".
 #'
-#' @param counties A vector of Counties. Can be by name or FIPS code (numeric or
-#' character). See examples.
+#' @param counties A vector of Counties. Must be by FIPS code (numeric or
+#' character).
 #' @examples
 #' # "06075" is San Francisco County, California
 #' get_zctas_by_county("06075")
@@ -49,28 +51,16 @@ get_zcta_crosswalk = function() {
 #' # 6075 (== as.numeric("06075")) works too
 #' get_zctas_by_county(6075)
 #'
-#' # Full name works too - see ?zcta_crosswalk for "proper" spelling.
-#' # This is not case sensitive.
-#' get_zctas_by_county("NASSAU countY")
-#'
 #' # Multiple counties at the same time are also OK
 #' get_zctas_by_county(c("06075", "36059"))
 #'
-#' \dontrun{
-#' # But you can't mix types in a single request
-#' sf_ny_zctas = get_zctas_by_county(c("06075", "Nassau County"))
-#' }
-
 #' @importFrom utils data
 #' @importFrom dplyr pull filter
 #' @export
 get_zctas_by_county = function(counties) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
-  if (all(tolower(counties) %in% zcta_crosswalk$county_name)) {
-    col = "county_name"
-    counties = tolower(counties)
-  } else if (all(counties %in% zcta_crosswalk$county_fips)) {
+  if (all(counties %in% zcta_crosswalk$county_fips)) {
     col = "county_fips"
   } else if (all(counties %in% zcta_crosswalk$county_fips_numeric)) {
     col = "county_fips_numeric"
@@ -78,6 +68,7 @@ get_zctas_by_county = function(counties) {
     stop("User supplied bad data! Type 'get_zctas_by_county' to understand how this function works.")
   }
 
+  print(paste("Using column", col))
   zcta_crosswalk |>
     filter(!!sym(col) %in% counties) |>
     pull(.data$zcta) |>
