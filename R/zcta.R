@@ -40,13 +40,27 @@ get_zcta_crosswalk = function() {
 #' Given a vector of counties, return the ZIP Code Tabulation Areas (ZCTAs)
 #' in those counties
 #'
-#' @param counties A vector of Counties as FIPS codes. Must be 5-digits as characters - see examples.
+#' @param counties A vector of Counties. Can be by name or FIPS code (numeric or
+#' character). See examples.
 #' @examples
-#' # 06075 is San Francisco County, California
+#' # "06075" is San Francisco County, California
 #' get_zctas_by_county("06075")
 #'
-#' # "36059" is Nassau County, New York
+#' # 6075 (== as.numeric("06075")) works too
+#' get_zctas_by_county(6075)
+#'
+#' # Full name works too - see ?zcta_crosswalk for "proper" spelling.
+#' # This is not case sensitive.
+#' get_zctas_by_county("NASSAU countY")
+#'
+#' # Multiple counties at the same time are also OK
 #' get_zctas_by_county(c("06075", "36059"))
+#'
+#' \dontrun{
+#' # But you can't mix types in a single request
+#' sf_ny_zctas = get_zctas_by_county(c("06075", "Nassau County"))
+#' }
+
 #' @importFrom utils data
 #' @importFrom dplyr pull filter
 #' @export
