@@ -1,5 +1,5 @@
 ---
-title: "Workflow-with-tidycensus-and-tigris"
+title: "Workflow with tidycensus"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Workflow-with-tidycensus-and-tigris}
@@ -14,54 +14,67 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, warning = FALSE, message = FALSE}
 library(zctaCrosswalk)
+library(tidycensus)
+library(dplyr)
 ```
 
-# The Problem
-
-The `tidycensus` package allows you to easily get ZIP Code Tabulation Area (ZCTA) level data of the entire US. But it does not provide a way to subset that data for just an individual county or state, which makes the data difficult to analyze:
+`zctaCrosswalk` was designed to work well with the `tidycensus` package. 
+`tidycensus` is the most popular way to access Census data in R.
+Here is an example of using it to get Median Household Income on
+all ZCTAs in the US:
 
 ```{r}
-library(tidycensus)
-library(mapview)
-
-zcta_income <- get_acs(
+zcta_income = get_acs(
   geography = "zcta",
   variables = "B19013_001",
-  year = 2021,
-  geometry = TRUE
-)
+  year      = 2021)
 
-# No State or County info
-head(zcta_income) 
-
-# Creates a map of the entire US, whereas I'd like to just be of a single state or county
-# mapview(zcta_income, zcol = "estimate")
+head(zcta_income)
 ```
-`zctaCrosswalk` provides two functions to help you subset this dataframe: `?get_zctas_by_county` and `?get_zctas_by_state`.
 
-# get_zctas_by_county
+Note that `?get_acs` returns data for all ZCTAs in the US. It does 
+not provide an option to get data on ZCTAs by State or County. And the dataframe it returns 
+does not provide enough metadata to allow you to do this subselection yourself.
 
-`?get_zctas_by_county` accepts a vector of counties, and returns a vector of ZCTAs in those counties. Counties must be identified by their FIPS code (either character or numeric). If you do not know the FIPS code of the county you want, I recommend simply googling it.
-
-Here is an example of using `get_zctas_by_county` to whittle `zcta_income` down to just the ZCTAs in San Francisco County, California (FIPS code 6075)
+A primary motivation for creating the `zctaCrosswalk` package was to support this 
+type of analysis. Note that `?get_acs` returns the ZCTA in a column called `GEOID`. We 
+can combine this fact with `?dplyr::filter` and `?get_zctas_by_county` to 
+filter to just ZCTAs in San Francisco County, California:
 
 ```{r}
+nrow(zcta_income) 
+
+sf_zcta_income = zcta_income |>
+  dplyr::filter(GEOID %in% get_zctas_by_county("06075"))
+
+nrow(sf_zcta_income)
+head(sf_zcta_income)
+```
+
+The same pattern can be executed with `?get_zctas_by_state` to filter the output
+of `?get_acs` to an arbitrary number of states.
+
+## Mapping the Result
+
+A primary motivation in creating this workflow (and indeed, this package) was
+to create demographic maps at the ZCTA level for selected states and counties.
+If this interests you as well, I encourage you to copy the below code into R and view the output yourself. (Unfortunately, R package vignettes do not seem to handle map output from the `mapview` package well). This is a powerful and elegant pattern for visualizing ZCTA demographics in R:
+
+```{r eval = FALSE}
+library(zctaCrosswalk)
+library(tidycensus)
 library(dplyr)
+library(mapview)
 
-sf_zcta_income = filter(zcta_income, GEOID %in% get_zctas_by_county(6075)) 
-# mapview(sf_zcta_income, zcol = "estimate")
+all_zctas = get_acs(
+  geography = "zcta",
+  variables = "B19013_001",
+  year      = 2021,
+  geometry  = TRUE)
+
+filtered_zctas = filter(all_zctas, GEOID %in% get_zctas_by_county(6075))
+
+mapview(filtered_zctas, zcol = "estimate")
 ```
-# get_zctas_by_state
-
-`get_zctas_by_state` accepts a vector of states and returns the ZCTAs in those states. States can be identified by their (case-insensitive) name, postal code or FIPS code (character or numeric).
-
-Here is an example of whittling down our original dataset to the ZCTAs in Maryland.
-
-```{r}
-maryland_zcta_income = filter(zcta_income, GEOID %in% get_zctas_by_state("Maryland")) 
-
-# mapview(maryland_zcta_income, zcol = "estimate")
-```
-
