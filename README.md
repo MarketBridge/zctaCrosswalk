@@ -9,7 +9,7 @@ analysts instead use [ZIP Code Tabulation Areas (ZCTAs)](https://www.census.gov/
 are maintained by the US Census Bureau. Census
 also provides [Relationship Files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html#zcta) that maps ZCTAs to other geographies.
 
-This package provides the "2020 ZCTA to County Relationship File" as a tibble, as well as convenience functions for working with it.
+This package provides the "2020 ZCTA to County Relationship File" as a tibble, combines it with useful publicly available metadata (such as State names) and provides convenience functions for querying it.
 
 # Installation
 

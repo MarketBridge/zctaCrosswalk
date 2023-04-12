@@ -1,0 +1,67 @@
+---
+title: "Workflow-with-tidycensus-and-tigris"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Workflow-with-tidycensus-and-tigris}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(zctaCrosswalk)
+```
+
+# The Problem
+
+The `tidycensus` package allows you to easily get ZIP Code Tabulation Area (ZCTA) level data of the entire US. But it does not provide a way to subset that data for just an individual county or state, which makes the data difficult to analyze:
+
+```{r}
+library(tidycensus)
+library(mapview)
+
+zcta_income <- get_acs(
+  geography = "zcta",
+  variables = "B19013_001",
+  year = 2021,
+  geometry = TRUE
+)
+
+# No State or County info
+head(zcta_income) 
+
+# Creates a map of the entire US, whereas I'd like to just be of a single state or county
+# mapview(zcta_income, zcol = "estimate")
+```
+`zctaCrosswalk` provides two functions to help you subset this dataframe: `?get_zctas_by_county` and `?get_zctas_by_state`.
+
+# get_zctas_by_county
+
+`?get_zctas_by_county` accepts a vector of counties, and returns a vector of ZCTAs in those counties. Counties must be identified by their FIPS code (either character or numeric). If you do not know the FIPS code of the county you want, I recommend simply googling it.
+
+Here is an example of using `get_zctas_by_county` to whittle `zcta_income` down to just the ZCTAs in San Francisco County, California (FIPS code 6075)
+
+```{r}
+library(dplyr)
+
+sf_zcta_income = filter(zcta_income, GEOID %in% get_zctas_by_county(6075)) 
+# mapview(sf_zcta_income, zcol = "estimate")
+```
+# get_zctas_by_state
+
+`get_zctas_by_state` accepts a vector of states and returns the ZCTAs in those states. States can be identified by their (case-insensitive) name, postal code or FIPS code (character or numeric).
+
+Here is an example of whittling down our original dataset to the ZCTAs in Maryland.
+
+```{r}
+maryland_zcta_income = filter(zcta_income, GEOID %in% get_zctas_by_state("Maryland")) 
+
+# mapview(maryland_zcta_income, zcol = "estimate")
+```
+

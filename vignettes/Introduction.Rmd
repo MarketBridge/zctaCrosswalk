@@ -1,0 +1,128 @@
+---
+title: "Introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(zctaCrosswalk)
+```
+
+This package is designed to help answer common analytical questions that arise
+when working with US ZIP Codes.
+
+Note: the entity which maintains US ZIP Codes (the US Postal
+Service) does not release a map or crosswalk of that dataset. As a result, most
+analysts instead use [ZIP Code Tabulation Areas (ZCTAs)](https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html) which
+are maintained by the US Census Bureau. Census
+also provides [Relationship Files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html#zcta) that maps ZCTAs to other geographies.
+
+This package provides the "2020 ZCTA to County Relationship File" as a tibble, combines it with useful publicly available metadata (such as State names) and provides convenience functions for querying it.
+
+The most useful functions and data objects in this package are:
+
+ * `?get_zctas_by_state`
+ * `?get_zctas_by_county`
+ * `?get_zcta_metadata`
+
+## ?get_zctas_by_state
+
+`?get_zctas_by_state` takes a vector of states and returns the vector of ZCTAs in those states. Here are some examples:
+
+```{r}
+# Not case sensitive when using state names
+head(
+  get_zctas_by_state("California")
+)
+
+# USPS state abbreviations are also OK - but these *are* case sensitive
+head(
+  get_zctas_by_state("CA")
+)
+
+# Multiple states at the same time are also OK
+head(
+  get_zctas_by_state(c("CA", "NY"))
+)
+
+# Throws an error - you can't mix types in a single request
+# get_zctas_by_state(c("California", "NY"))
+```
+
+Note that this dataset's conception of "State" is likely different than yours. 
+The primary data structure in this package is `?zcta_crosswalk` and contains 
+56 "states":
+
+```{r}
+data(zcta_crosswalk)
+
+head(
+  unique(zcta_crosswalk$state_name)
+)
+```
+
+A common problem when doing analytics with states is ambiguity around names. For 
+example, most people write "Washington, DC". But this dataset uses "District of Columbia". The most common solution to this problem is to use [FIPS Codes](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code)
+when doing analytics with states. And so `?get_zctas_by_state` also
+supports FIPS codes. 
+
+Note that technically FIPS codes are characters and have a leading 
+zero (e.g. California is "06"). But in practice people often use numbers (e.g.
+6 for California) as well. As a result, `?get_zctas_by_state` supports both:
+
+```{r}
+ca1 = get_zctas_by_state("CA")
+ca2 = get_zctas_by_state("06")
+ca3 = get_zctas_by_state(6)
+all(ca1 == ca2)
+all(ca2 == ca3)
+```
+
+## ?get_zctas_by_county
+
+`?get_zctas_by_county` works analogously to `?get_zctas_by_state`. The primary
+difference is that it only accepts FIPS codes. This is because [FIPS county codes](https://en.wikipedia.org/wiki/FIPS_county_code) are unique, but their names are not.
+(For example, 30 counties in this dataset are named "Washington County"!)
+
+If you need to find the FIPS code for a particular county, I recommend simply googling
+it (e.g. "FIPS code for San Francisco County California") or consulting
+[this](https://en.wikipedia.org/wiki/List_of_United_States_FIPS_codes_by_county) page.
+
+Note that the FIPS codes can be either character or numeric.
+```{r}
+# "06075" is San Francisco County, California
+head(
+  get_zctas_by_county("06075")
+)
+
+# 6075 (== as.numeric("06075")) works too
+head(
+  get_zctas_by_county(6075)
+)
+
+# Multiple counties at the same time are also OK
+head(
+  get_zctas_by_county(c("06075", "36059"))
+)
+```
+
+## ?get_zcta_metadata
+
+`?get_zcta_metadata` takes a vector of ZCTAs and returns all available metadata on them.
+The ZCTAs can be either character or numeric.
+
+```{r}
+get_zcta_metadata("90210")
+
+get_zcta_metadata(c(90210, 90211))
+```

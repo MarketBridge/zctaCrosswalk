@@ -41,6 +41,6 @@ head(ca_ny_zctas)
 
 \dontrun{
 # But you can't mix types in a single request
-ny_ca_zctas = get_zctas_in_state(c("06", "NY"))
+ny_ca_zctas = get_zctas_by_state(c("06", "NY"))
 }
 }
