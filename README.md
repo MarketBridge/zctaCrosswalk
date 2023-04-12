@@ -13,12 +13,12 @@ This package provides the "2020 ZCTA to County Relationship File" as a tibble, a
 
 # Installation
 
-`zctaCrosswalk` is not currently available on CRAN. The latest stable version is v1.0.0 and can be 
-installed like this:
+`zctaCrosswalk` is not currently available on CRAN. You can install the latest
+development version like this:
 
 ```
 library(devtools)
-install_github('https://github.com/MarketBridge/zctaCrosswalk/releases/tag/v1.0.0')
+install_github('https://github.com/MarketBridge/zctaCrosswalk/')
 ```
 
 # Example Usage
