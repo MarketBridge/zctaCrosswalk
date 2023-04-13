@@ -29,7 +29,7 @@ also provides [Relationship Files](https://www.census.gov/geographies/reference-
 
 This package provides the "2020 ZCTA to County Relationship File" as a tibble, combines it with useful publicly available metadata (such as State names) and provides convenience functions for querying it.
 
-The most useful functions and data objects in this package are:
+The main functions in this package are:
 
  * `?get_zctas_by_state`
  * `?get_zctas_by_county`
@@ -57,18 +57,6 @@ head(
 
 # Throws an error - you can't mix types in a single request
 # get_zctas_by_state(c("California", "NY"))
-```
-
-Note that this dataset's conception of "State" is likely different than yours. 
-The primary data structure in this package is `?zcta_crosswalk` and contains 
-56 "states":
-
-```{r}
-data(zcta_crosswalk)
-
-head(
-  unique(zcta_crosswalk$state_name)
-)
 ```
 
 A common problem when doing analytics with states is ambiguity around names. For 
