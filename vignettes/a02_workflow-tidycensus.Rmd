@@ -40,8 +40,10 @@ does not provide enough metadata to allow you to do this subselection yourself.
 
 A primary motivation for creating the `zctaCrosswalk` package was to support this 
 type of analysis. Note that `?get_acs` returns the ZCTA in a column called `GEOID`. We 
-can combine this fact with `?dplyr::filter` and `?get_zctas_by_county` to 
-filter to just ZCTAs in San Francisco County, California:
+can combine this fact with `?dplyr::filter`, `?get_zctas_by_county` and 
+`?get_zctas_by_state` to subset to any states or counties we choose.
+
+Here we filter `zcta_income` to ZCTAs in San Francisco County, California:
 
 ```{r}
 nrow(zcta_income) 
@@ -52,9 +54,6 @@ sf_zcta_income = zcta_income |>
 nrow(sf_zcta_income)
 head(sf_zcta_income)
 ```
-
-The same pattern can be executed with `?get_zctas_by_state` to filter the output
-of `?get_acs` to an arbitrary number of states.
 
 ## Mapping the Result
 
