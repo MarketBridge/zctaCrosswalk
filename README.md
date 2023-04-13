@@ -1,4 +1,4 @@
-# Motivation
+# Introduction
 
 This package is designed to help answer common analytical questions that arise
 when working with US ZIP Codes.
@@ -7,28 +7,42 @@ Note: the entity which maintains US ZIP Codes (the US Postal
 Service) does not release a map or crosswalk of that dataset. As a result, most
 analysts instead use [ZIP Code Tabulation Areas (ZCTAs)](https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html) which
 are maintained by the US Census Bureau. Census
-also provides [Relationship Files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html#zcta) that maps ZCTAs to other geographies.
+also provides [Relationship Files](https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html#zcta) that map ZCTAs to other geographies.
 
 This package provides the "2020 ZCTA to County Relationship File" as a tibble, combines it with useful publicly available metadata (such as State names) and provides convenience functions for querying it.
 
 # Installation
 
-`zctaCrosswalk` is not currently available on CRAN. You can install the latest
-development version like this:
+You can install the latest stable version of this package from CRAN by typing the following:
+
+```
+install.packages("zctaCrosswalk")
+```
+
+You can install the latest
+development version from Github by typing:
 
 ```
 library(devtools)
 install_github('https://github.com/MarketBridge/zctaCrosswalk/')
 ```
 
-# Example Usage
+# Usage
 
-The most useful functions in this package are:
+The main functions in this package are:
 
  * `?get_zctas_by_county`
  * `?get_zctas_by_state`
  * `?get_zcta_metadata`
 
-The Relationship File is stored as the tibble `zcta_crosswalk`. Note that the file has been processed to make it easier to work with. To see the processing,
-view the contents of the function `?get_zcta_crosswalk` by typing
-`get_zcta_crosswalk` (i.e., if you drop the parentheses, then R will show you the contents of the function).
+To learn more, please read the following 3 Vignettes:
+
+1. Introduction 
+2. Workflow with tidycensus
+3. Developer Notes
+
+You can access the Vignettes by typing the following after installing the package:
+
+```
+browseVignettes(package = "zctaCrosswalk")
+```
