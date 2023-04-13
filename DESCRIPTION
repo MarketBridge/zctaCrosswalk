@@ -8,6 +8,7 @@ Description: Contains the US Census Bureau's 2020 ZCTA to County Relationship
     File, as well as convenience functions to translate between States, Counties
     and ZIP Code Tabulation Areas (ZCTAs).
 License: MIT + file LICENSE
+URL: https://github.com/MarketBridge/zctaCrosswalk
 Encoding: UTF-8
 LazyData: true
 Imports:

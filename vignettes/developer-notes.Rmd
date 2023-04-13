@@ -20,10 +20,16 @@ library(dplyr)
 ```
 
 While creating this package I was acutely aware that ZCTAs change frequently. For example,
-back in 2016 I created the [choroplethrZip](https://github.com/arilamstein/choroplethrZip) package. That package was, for a time, very popular. But it is now out of date. That means that this package, too, will one day become out of date. 
+back in 2016 I created the [choroplethrZip](https://github.com/arilamstein/choroplethrZip) package. That package was, for a time, popular. But it is now out of date, 
+because the underlying data it stores is out of date. I expect that something similar 
+will happen with this package.
 
-This vignette is written in the form of
-a "note to my future self" in case I wind up needing to write a similar package in the future. But it has another motivation: to maximize the likelihood that a motivated user of this package will learn the information and skills necessary to create a similar package themselves. It explains how the package came to be as well as deficencies I see in both the package itself and the R package ecosystem. 
+This vignette is written as 
+a "note to my future self" in case I wind up needing to write a similar package 
+again in the future. It is also intended to increase the number of people who 
+understand how to create 
+packages like this. Hopefully this will increase the number of people who contribute
+to R's ecosystem of Public Data packages. 
 
 ## ?zcta_crosswalk
 The core data structure in this package is `?zcta_crosswalk`:
@@ -51,34 +57,33 @@ get_zcta_crosswalk
 The function starts by reading and transforming the contents of a URL. At the time of this writing
 that is the URL for the "2010 ZCTA to County Relationship File" which I mentioned elsewhere. You should be able to copy that URL into a browser and view it now.
 
-This means that if (for example) Census publishes a similar file next year, you could just change the URL, rerun the same code and get the updated file in R. However, I have no idea when Census plans to update this dataset or whether they plan to publish it in the same format.
+This means that if (for example) Census publishes new data in the same format tomorrow, you could just change the URL, rerun the same code and get the updated file in R. However, I have no idea when Census plans to update this dataset or whether they plan to publish it in the same format.
 
-## Deficencies in the file
+## Limitations of the file
 
 Open the URL referenced in `?get_zcta_crosswalk` in a browser and search for `zcta5 90210`. You will see this entry:
 
 ```
 221704258470394|90210|ZCTA5 90210|27823432|153478|G6350|B5|S|275901063468976|06037|Los Angeles County|10513491099|1787501506|G4020|H1|A|27823432|153478
 ```
-About the only human readable thing there is "Los Angeles County". If you are my age you will recognize "90210" from the old TV show "Beverley Hills 90210" (it made the ZIP code famous). And if you have prior experience with FIPS codes you might know or guess that "06037" is the FIPS code for Los Angles County.
+About the only human readable thing there is "Los Angeles County". If you are my age you will also recognize "90210" as the ZIP code from the old TV show "Beverley Hills 90210". And if you have prior experience with FIPS codes you might know or guess that "06037" is the FIPS code for Los Angles County.
 
-Since the purpose of this package is to help people go from ZCTAs to human readable things, this file is basically not enough for us to do what we need. 
-
-At this point what we want is a data structure that we can join to that contains the missing information. This data structure has a county name and FIPS code - we don't need more information about the county. What we want are state name and postal code, so a user can say things like "Give me all the ZCTAs in New York / NY / 36". 
-
-In an ideal world there would be a lightweight package on CRAN that has this information already. To the best of my knowledge one does not exist, so I created it in the data structure `?state_names`.
+In short, this file (the "2010 ZCTA to County Relationship File") has enough information to let users walk between ZCTAs and Counties. But it is not really built to answer the question "What ZCTAs are in a given state?" `get_zcta_crosswalk` begins to answer that question by splitting the first two characters of the `county_fips` into a new column, `state_fips`. But I believe that more work needs to be done.
 
 ## ?state_names
 
+My assumption is that when users ask the question "What ZCTAs are in state X?" they will want to provide X as either a normal name (e.g. "California") or a postal code abbreviation (e.g. "CA"). Because the file we are dealing with only uses FIPS codes, we need to do more work.
+
+R has a two built-in vectors that deal with state names (`state.abb` and `state.name`) but they cannot help us for two reasons: (1) they do not contain FIPS code and (2) they only contain 50 states, whereas our dataset contains 56 "state or state equivalents".
+
+To solve this problem, I created a new data structure called `state_names`.
 ```{r}
 data(state_names)
 
 state_names
 ```
 
-This data structure is a standalone data structure so that others can use it in their own work. I assume that other people will want a lookup table for state-level FIPS codes that also includes postal codes and contains some of the more obscure FIPS codes.
-
-But it is NOT complete. I only added enough to cover the file I was working with. So while it could be a starting off point for the hypothetical "lightweight standalone package that contains all FIPS codes plus their postal codes", it is not that package.
+I believe that it would be useful for R to have a standalone package that contains a data frame like this for all FIPS codes. I did not do that here because even though this dataset has 56 state-level entities, the full list of FIPS codes is much larger (e.g. see [here](https://www.census.gov/library/reference/code-lists/ansi.html).
 
 ## All about ZCTAs
 
@@ -87,13 +92,13 @@ Please note that Census ZCTAs are not USPS ZIP Codes. If you would like to learn
 1. My (now free) course [Mapmaking in R with Choroplethr](https://ari-lamsteins-courses.thinkific.com/courses/mapmaking-in-r-with-choroplethr) has 3 lessons on ZIP Code / ZCTA geography.
 2. In 2017 I had the pleasure of meeting Jon Sperling, who is one of the creators of the ZCTA, at the Association of Public Data Users (APDU) conference. You can learn about that meeting, including a reference to one of his papers on the topic, [here](https://arilamstein.com/blog/2017/10/24/meeting-titans-open-data/). 
 
-One of my recollections from that meeting is that he told me that ZIP Codes are designed to follow roads (i.e. actual mailman routes). And both sides of the road are normally the same ZIP Code so that a mailman could (for example) go out, turn around, come back, and  drop off mail the entire time.
+One of my recollections from that meeting is that he told me that ZIP Codes are designed to follow roads (i.e. actual mailman routes). And both sides of the road are normally the same ZIP Code so that a mailman could (for example) go out, turn around, come back, and  drop off mail the entire time. By definitions, this means that different sides of the same block can be different ZIP codes.
 
-Census geography, however, is built on blocks. So and entire "block" must be the same ZCTA. This difference in how ZIPs and ZCTAs are constructed means that (at least) the boarders between the two differ.
+Census geography, however, is built on blocks. So all homes on an entire "block" must be the same ZCTA. This difference in how ZIPs and ZCTAs are constructed means that (at least) the boarders between the two differ.
 
-Also, unlike States and Counties, the ZCTAs do not "cover" the entire country.
+Also, unlike States and Counties, ZCTAs do not "cover" the entire country - the full ZCTA map contains "holes".
 
-ZCTAs also frequently cross counties and states:
+ZCTAs also frequently cross counties and states. These appear as duplicate entries in the dataset:
 ```{r}
 zcta_crosswalk |>
   group_by(zcta) |>
@@ -104,4 +109,4 @@ zcta_crosswalk |>
 
 ## Funding
 
-I have now been doing this long enough to realize how critical funding is to doing work like this. I would like to thank my employer, [MarketBridge](https://market-bridge.com/) (and particularly my supervisor, Andy Hasselwander), for supporting my development of this package. If they had not been generous in allowing me to both work on this package internally, and also to open source it, then it would not be be here today.
+I would like to thank my employer, [MarketBridge](https://market-bridge.com/), for supporting my development of this package. This package would not have been developed without their support.
