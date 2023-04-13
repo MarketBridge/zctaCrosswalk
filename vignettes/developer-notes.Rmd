@@ -21,7 +21,7 @@ library(dplyr)
 
 While creating this package I was acutely aware that ZCTAs change frequently. For example,
 back in 2016 I created the [choroplethrZip](https://github.com/arilamstein/choroplethrZip) package. That package is now out of date, 
-because the underlying data it stores is out of date. I expect that something similar 
+because the underlying data it stores became out of date. I expect that something similar 
 will eventually happen with this package.
 
 This vignette is written as 
@@ -39,11 +39,9 @@ data(zcta_crosswalk)
 print(zcta_crosswalk, n = 5)
 ```
 
-Creating this data structure took a lot of work. Unfortunately, R packages aren't really
-designed to detail how you go about creating a data structure like this. But it's an 
-important topic, so I will try to sketch it out.
+Let's examine how the data structure was created.
 
-## ?get_zcta_crosswalk
+### ?get_zcta_crosswalk
 
 Start by looking at the contents of the function `?get_zcta_crosswalk`. You can
 do this by typing `get_zcta_crosswalk` at the console:
@@ -55,8 +53,8 @@ get_zcta_crosswalk
 
 The function starts by reading and transforming the contents of a URL. At the 
 time of this writing
-that is the URL for the Census Bureau's "2010 ZCTA to County Relationship File" 
-which I mentioned elsewhere.
+that is the URL for the Census Bureau's "2010 ZCTA to County Relationship File", 
+a file which I mentioned elsewhere.
 
 This means that if (for example) Census publishes new data in the same format tomorrow, 
 you could just change the URL, rerun the same code and get the updated data in R. 
@@ -72,11 +70,14 @@ If you open the URL referenced in `?get_zcta_crosswalk` in a browser you will se
 This tells us that ZCTA 94109 is in Los Angeles County. It also tells us that Los 
 Angles County has FIPS Code 06037.
 
-## Limitations of the file
+### Adding in State Information
 
-Unfortunately, the file does not directly contain any state information. And since I wanted to run queries like "Get all ZCTAs in a given state", I needed to add that in. Because the first two characters of a County FIPS Code indicate the County's state, `get_zcta_crosswalk` splits those characters into a new column named `state_fips`. This allows a user to search for ZCTAs in a state if they know the state's FIPS code. 
+Unfortunately, the file does not directly contain any state information. And 
+since I wanted to run queries like "Get all ZCTAs in a given state", I needed 
+to add that in. 
 
-## ?state_names
+I started by splitting out the first two characters of a County FIPS Code into 
+a new column called `state_fips`. This allows a user to search for ZCTAs in a state if they know the state's FIPS code. 
 
 However, this does not help us if users want to select identify a state by it's name or Postal Code Abbreviation.
 To address this limitation, I created a new dataframe called `state_names`, and use it to join against the results of `get_zcta_crosswalk`:
@@ -94,41 +95,27 @@ a data frame like this for all FIPS codes. I did not do that here because even
 though this dataset has 56 state-level entities, the full list of FIPS codes is 
 much larger (e.g. see [here](https://www.census.gov/library/reference/code-lists/ansi.html)).
 
-Also note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`) but they cannot help us for two reasons: (1) they do not contain FIPS code and (2) they only contain 50 states
+Also note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`) but they cannot help us for two reasons: (1) they do not contain FIPS code and (2) they only contain 50 states.
 
 ## Learning About ZCTAs
 
-Please note that Census ZCTAs are not USPS ZIP Codes. If you would like to learn more about the differences, and how ZCTAs are constructued, I recommend two references:
+If you would like to learn more about ZCTAs (including how they differ from ZIP 
+Codes), I recommend two references:
 
-1. My (now free) course [Mapmaking in R with Choroplethr](https://ari-lamsteins-courses.thinkific.com/courses/mapmaking-in-r-with-choroplethr) has 3 lessons on ZIP Code / ZCTA geography.
+1. My free course [Mapmaking in R with Choroplethr](https://ari-lamsteins-courses.thinkific.com/courses/mapmaking-in-r-with-choroplethr) has three sections dedicated to "ZIP Code Choropleths".
 2. In 2017 I had the pleasure of meeting Jon Sperling, who is one of the creators of the ZCTA, at the Association of Public Data Users (APDU) conference. You can learn about that meeting, including a reference to one of his papers on the topic, [here](https://arilamstein.com/blog/2017/10/24/meeting-titans-open-data/). 
 
-One of my recollections from that meeting is that he told me that ZIP Codes are designed to follow roads (i.e. actual mailman routes). This means that both sides of a road are normally the same ZIP Code. This means that, by definition, this means that different sides of the same block can be different ZIP codes.
+One of my recollections from that meeting is Jon explaining that ZIP Codes are designed to follow roads. This means that different sides of the same block can have different ZIP codes.
+Census geography, however, is built on 
+"blocks". This means that all homes on an entire block must be the same ZCTA. This 
+difference in construction means that ZIPs and ZCTAs are unlikely to ever truly be identical.
 
-Census geography, however, is built on blocks. So all homes on an entire "block" must be the same ZCTA. This difference in how ZIPs and ZCTAs are constructed means that (at least) the borders between the two differ.
+Some other details that might interest people new to the field:
 
-Also, unlike States and Counties, ZCTAs do not "cover" the entire country - the full ZCTA map contains "holes".
+ * Unlike States and Counties, ZCTAs do not "cover" the entire country. The full ZCTA map contains "holes".
+ * ZCTAs frequently cross counties and sometimes even states. These cases appear as duplicate entries in `zcta_crosswalk`. (For example, six rows have ZCTA 39573).
+ * The primary reason why `get_zctas_by_county` does not accept county names is that county names are not unique between states. (For example, 30 states have a "Washington County").
 
-ZCTAs also frequently cross counties and states. These appear as duplicate entries in the dataset:
-```{r}
-zcta_crosswalk |>
-  group_by(zcta) |>
-  summarize(n = n()) |>
-  arrange(desc(n)) |>
-  filter(n > 1) |>
-  print(n = 5)
-```
-
-The reason why `get_zctas_by_county` does not accept county names is that county names are not unique between states:
-
-```{r}
-zcta_crosswalk |>
-  group_by(county_name) |>
-  summarize(num_states = n_distinct(state_fips)) |>
-  arrange(desc(num_states)) |>
-  filter(num_states > 1) |>
-  print(n = 5)
-```
 ## Funding
 
 I would like to thank my employer, [MarketBridge](https://market-bridge.com/), for supporting my development of this package. This package would not have been developed without their support.
