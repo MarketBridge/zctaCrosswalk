@@ -2,7 +2,7 @@
 title: "Workflow with tidycensus"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Workflow-with-tidycensus-and-tigris}
+  %\VignetteIndexEntry{2) Workflow with tidycensus}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

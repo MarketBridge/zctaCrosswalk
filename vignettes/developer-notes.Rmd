@@ -2,7 +2,7 @@
 title: "Developer Notes"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{developer-notes}
+  %\VignetteIndexEntry{3) Developer Notes}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
