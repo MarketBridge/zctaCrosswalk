@@ -1,0 +1,107 @@
+---
+title: "Developer Notes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{developer-notes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning = FALSE, message = FALSE}
+library(zctaCrosswalk)
+library(dplyr)
+```
+
+While creating this package I was acutely aware that ZCTAs change frequently. For example,
+back in 2016 I created the [choroplethrZip](https://github.com/arilamstein/choroplethrZip) package. That package was, for a time, very popular. But it is now out of date. That means that this package, too, will one day become out of date. 
+
+This vignette is written in the form of
+a "note to my future self" in case I wind up needing to write a similar package in the future. But it has another motivation: to maximize the likelihood that a motivated user of this package will learn the information and skills necessary to create a similar package themselves. It explains how the package came to be as well as deficencies I see in both the package itself and the R package ecosystem. 
+
+## ?zcta_crosswalk
+The core data structure in this package is `?zcta_crosswalk`:
+
+```{r}
+data(zcta_crosswalk)
+
+zcta_crosswalk
+```
+
+Creating this data structure took a lot of work. Unfortunately, R packages aren't really
+designed to detail how you go about creating a data structure like this. But it's an 
+important topic, so I will try to sketch it out.
+
+## ?get_zcta_crosswalk
+
+Start by looking at the contents of the function `?get_zcta_crosswalk`. You can
+do this by typing `get_zcta_crosswalk` at the console:
+
+```{r}
+# By not including the trailing (), R will show you the function contents
+get_zcta_crosswalk
+```
+
+The function starts by reading and transforming the contents of a URL. At the time of this writing
+that is the URL for the "2010 ZCTA to County Relationship File" which I mentioned elsewhere. You should be able to copy that URL into a browser and view it now.
+
+This means that if (for example) Census publishes a similar file next year, you could just change the URL, rerun the same code and get the updated file in R. However, I have no idea when Census plans to update this dataset or whether they plan to publish it in the same format.
+
+## Deficencies in the file
+
+Open the URL referenced in `?get_zcta_crosswalk` in a browser and search for `zcta5 90210`. You will see this entry:
+
+```
+221704258470394|90210|ZCTA5 90210|27823432|153478|G6350|B5|S|275901063468976|06037|Los Angeles County|10513491099|1787501506|G4020|H1|A|27823432|153478
+```
+About the only human readable thing there is "Los Angeles County". If you are my age you will recognize "90210" from the old TV show "Beverley Hills 90210" (it made the ZIP code famous). And if you have prior experience with FIPS codes you might know or guess that "06037" is the FIPS code for Los Angles County.
+
+Since the purpose of this package is to help people go from ZCTAs to human readable things, this file is basically not enough for us to do what we need. 
+
+At this point what we want is a data structure that we can join to that contains the missing information. This data structure has a county name and FIPS code - we don't need more information about the county. What we want are state name and postal code, so a user can say things like "Give me all the ZCTAs in New York / NY / 36". 
+
+In an ideal world there would be a lightweight package on CRAN that has this information already. To the best of my knowledge one does not exist, so I created it in the data structure `?state_names`.
+
+## ?state_names
+
+```{r}
+data(state_names)
+
+state_names
+```
+
+This data structure is a standalone data structure so that others can use it in their own work. I assume that other people will want a lookup table for state-level FIPS codes that also includes postal codes and contains some of the more obscure FIPS codes.
+
+But it is NOT complete. I only added enough to cover the file I was working with. So while it could be a starting off point for the hypothetical "lightweight standalone package that contains all FIPS codes plus their postal codes", it is not that package.
+
+## All about ZCTAs
+
+Please note that Census ZCTAs are not USPS ZIP Codes. If you would like to learn more about the differences, and how ZCTAs are constructued, I recommend two references:
+
+1. My (now free) course [Mapmaking in R with Choroplethr](https://ari-lamsteins-courses.thinkific.com/courses/mapmaking-in-r-with-choroplethr) has 3 lessons on ZIP Code / ZCTA geography.
+2. In 2017 I had the pleasure of meeting Jon Sperling, who is one of the creators of the ZCTA, at the Association of Public Data Users (APDU) conference. You can learn about that meeting, including a reference to one of his papers on the topic, [here](https://arilamstein.com/blog/2017/10/24/meeting-titans-open-data/). 
+
+One of my recollections from that meeting is that he told me that ZIP Codes are designed to follow roads (i.e. actual mailman routes). And both sides of the road are normally the same ZIP Code so that a mailman could (for example) go out, turn around, come back, and  drop off mail the entire time.
+
+Census geography, however, is built on blocks. So and entire "block" must be the same ZCTA. This difference in how ZIPs and ZCTAs are constructed means that (at least) the boarders between the two differ.
+
+Also, unlike States and Counties, the ZCTAs do not "cover" the entire country.
+
+ZCTAs also frequently cross counties and states:
+```{r}
+zcta_crosswalk |>
+  group_by(zcta) |>
+  summarize(n = n()) |>
+  arrange(desc(n)) |>
+  filter(n > 1)
+```
+
+## Funding
+
+I have now been doing this long enough to realize how critical funding is to doing work like this. I would like to thank my employer, [MarketBridge](https://market-bridge.com/) (and particularly my supervisor, Andy Hasselwander), for supporting my development of this package. If they had not been generous in allowing me to both work on this package internally, and also to open source it, then it would not be be here today.
