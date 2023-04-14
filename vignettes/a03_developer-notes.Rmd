@@ -20,7 +20,7 @@ library(dplyr)
 ```
 
 While creating this package I was acutely aware that ZCTAs change frequently. For example,
-back in 2016 I created the [choroplethrZip](https://github.com/arilamstein/choroplethrZip) package. That package is now out of date, 
+back in 2016 I created a similar package called  [choroplethrZip](https://github.com/arilamstein/choroplethrZip). That package is now out of date, 
 because the underlying data it stores became out of date. I expect that something similar 
 will eventually happen with this package.
 
@@ -98,7 +98,7 @@ I started by splitting out the first two characters of each County FIPS Code int
 a new column called `state_fips`. This allows a user to search for ZCTAs in a state if they know the state's FIPS code. 
 
 However, this does not help us if users want to select a state by it's name or Postal Code Abbreviation.
-To address this limitation I created a new dataframe called `state_names`, and used it to join against the results of `get_zcta_crosswalk`:
+To address this limitation I created a new dataframe called `state_names`, and used it to join against the results of `?get_zcta_crosswalk`:
 
 ```{r}
 data(state_names)
@@ -110,7 +110,7 @@ One thing to keep in mind is that while there are technically only 50 states, "s
 contains 56 states (the extra ones are:  the District of Columbia, Puerto Rico, US Virigin Islands, American Samoa, Guam and the Northern Mariana Islands).
 
 I believe that it would be useful for R to have a standalone package that contains 
-a data frame like this for all FIPS codes. I did not break `state_fips` out 
+a data frame like this for all FIPS codes. I did not break `state_names` out 
 into a separate package because even though it has 56 state-level entities, the full list is 
 much [larger](https://www.census.gov/library/reference/code-lists/ansi.html).
 
@@ -133,7 +133,7 @@ difference in construction means that ZIPs and ZCTAs are unlikely to ever truly 
 
 ## Closing Thoughts
 
-My primary concern with this dataset is that people will assume that it is a present day crosswalk for ZIP Codes. As stated above, ZCTAs are not ZIP Codes. Additionally, this dataset was published in 2020, and it is not clear how many changes have occurred to ZIP Codes in the interim. 
+My primary concern with this dataset is that people will assume that it is a crosswalk for present-day ZIP Codes. As stated above, ZCTAs rarely (if ever) line up perfectly with ZIP Codes. Additionally, this dataset was published in 2020, and it is not clear how many changes have occurred to ZIP Codes in the interim. 
 
 ## Funding
 
