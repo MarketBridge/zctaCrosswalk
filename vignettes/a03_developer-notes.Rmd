@@ -43,21 +43,39 @@ Let's examine how the data structure was created.
 
 ### ?get_zcta_crosswalk
 
-Start by looking at the contents of the function `?get_zcta_crosswalk`. You can
-do this by typing `get_zcta_crosswalk` at the console:
+Start by looking at the contents of the function `?get_zcta_crosswalk`:
 
-```{r}
-# By not including the trailing (), R will show you the function's contents
-get_zcta_crosswalk
+```
+get_zcta_crosswalk = function() {
+
+  url = "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt"
+  zcta_crosswalk = read_delim(file = url, delim = "|")
+
+  # Select and rename columns
+  zcta_crosswalk = zcta_crosswalk |>
+    rename(zcta        = .data$GEOID_ZCTA5_20,
+           county_fips = .data$GEOID_COUNTY_20,
+           county_name = .data$NAMELSAD_COUNTY_20) |>
+    select(.data$zcta, .data$county_fips, .data$county_name)
+
+  # 1. The county FIPS is always 5 characters. And the first 2 characters always
+  # indicate the state. See https://en.wikipedia.org/wiki/FIPS_county_code.
+  # Breaking out the state allows for easier state selection later.
+  # 2. This file has all counties, some of which do not have a ZCTA. Remove
+  # those counties.
+  zcta_crosswalk |>
+    mutate(state_fips = str_sub(.data$county_fips, 1, 2)) |>
+    filter(!is.na(.data$zcta))
+}
 ```
 
-The function starts by reading and transforming the contents of a URL. At the 
+The function reads and transforms the contents of a URL. At the 
 time of this writing
 that is the URL for the Census Bureau's "2010 ZCTA to County Relationship File", 
 a file which I mentioned elsewhere.
 
 This means that if (for example) Census publishes new data in the same format tomorrow, 
-you could just change the URL, rerun the same code and get the updated data in R. 
+you could just change the URL, rerun the code and get the updated data in R. 
 (Note 
 that I do not know when Census plans to update this dataset or whether they 
 plan to publish it in the same format.)
@@ -79,8 +97,8 @@ to add that in.
 I started by splitting out the first two characters of a County FIPS Code into 
 a new column called `state_fips`. This allows a user to search for ZCTAs in a state if they know the state's FIPS code. 
 
-However, this does not help us if users want to select identify a state by it's name or Postal Code Abbreviation.
-To address this limitation, I created a new dataframe called `state_names`, and use it to join against the results of `get_zcta_crosswalk`:
+However, this does not help us if users want to select a state by it's name or Postal Code Abbreviation.
+To address this limitation I created a new dataframe called `state_names`, and use it to join against the results of `get_zcta_crosswalk`:
 
 ```{r}
 data(state_names)
@@ -88,14 +106,15 @@ data(state_names)
 print(state_names, n = 5)
 ```
 
-One thing to keep in mind is that while there are technically only 50 "states", "state" in this dataset really means "any top level administrative region". This dataset has 56 "states" (the "extra" ones are the District of Columbia, Puerto Rico, US Virigin Islands, American Samoa, Guam and the Northern Mariana Islands).
+One thing to keep in mind is that while there are technically only 50 states, "state" in this dataset really means "any top level administrative region". This dataset 
+contains 56 states (the extra ones are:  the District of Columbia, Puerto Rico, US Virigin Islands, American Samoa, Guam and the Northern Mariana Islands).
 
 I believe that it would be useful for R to have a standalone package that contains 
-a data frame like this for all FIPS codes. I did not do that here because even 
-though this dataset has 56 state-level entities, the full list of FIPS codes is 
-much larger (e.g. see [here](https://www.census.gov/library/reference/code-lists/ansi.html)).
+a data frame like this for all FIPS codes. I did not break `state_fips` out 
+into a separate package because even though it has 56 state-level entities, the full list is 
+much [larger](https://www.census.gov/library/reference/code-lists/ansi.html).
 
-Also note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`) but they cannot help us for two reasons: (1) they do not contain FIPS code and (2) they only contain 50 states.
+Also note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`), they cannot help us for two reasons: (1) they do not contain FIPS codes and (2) they only contain 50 states.
 
 ## Learning About ZCTAs
 
@@ -105,9 +124,8 @@ Codes), I recommend two references:
 1. My free course [Mapmaking in R with Choroplethr](https://ari-lamsteins-courses.thinkific.com/courses/mapmaking-in-r-with-choroplethr) has three sections dedicated to "ZIP Code Choropleths".
 2. In 2017 I had the pleasure of meeting Jon Sperling, who is one of the creators of the ZCTA, at the Association of Public Data Users (APDU) conference. You can learn about that meeting, including a reference to one of his papers on the topic, [here](https://arilamstein.com/blog/2017/10/24/meeting-titans-open-data/). 
 
-One of my recollections from that meeting is Jon explaining that ZIP Codes are designed to follow roads. This means that different sides of the same block can have different ZIP codes.
-Census geography, however, is built on 
-"blocks". This means that all homes on an entire block must be the same ZCTA. This 
+One of my recollections from that meeting is Jon explaining that ZIP Codes are designed to follow roads. This means that different sides of a single block can have different ZIP codes.
+Census geography, however, treats blocks as atomic. This means that all homes on a single block must have the same ZCTA. This 
 difference in construction means that ZIPs and ZCTAs are unlikely to ever truly be identical.
 
 Some other details that might interest people new to the field:
