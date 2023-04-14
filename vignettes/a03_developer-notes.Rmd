@@ -39,7 +39,7 @@ data(zcta_crosswalk)
 print(zcta_crosswalk, n = 5)
 ```
 
-Let's examine how the data structure was created.
+Most of the effort in creating this package was spent creating this data structure. Let's see how it was created.
 
 ### ?get_zcta_crosswalk
 
@@ -72,9 +72,9 @@ get_zcta_crosswalk = function() {
 The function reads and transforms the contents of a URL. At the 
 time of this writing
 that is the URL for the Census Bureau's "2010 ZCTA to County Relationship File", 
-a file which I mentioned elsewhere.
+a file which I mentioned earlier.
 
-This means that if (for example) Census publishes new data in the same format tomorrow, 
+This means that if Census publishes an updated dataset in the same format tomorrow 
 you could just change the URL, rerun the code and get the updated data in R. 
 (Note 
 that I do not know when Census plans to update this dataset or whether they 
@@ -85,7 +85,7 @@ If you open the URL referenced in `?get_zcta_crosswalk` in a browser you will se
 ```
 221704258470394|90210|ZCTA5 90210|27823432|153478|G6350|B5|S|275901063468976|06037|Los Angeles County|10513491099|1787501506|G4020|H1|A|27823432|153478
 ```
-This tells us that ZCTA 94109 is in Los Angeles County. It also tells us that Los 
+This tells us that ZCTA 90210 is in Los Angeles County. It also tells us that Los 
 Angles County has FIPS Code 06037.
 
 ### Adding in State Information
@@ -94,11 +94,11 @@ Unfortunately, the file does not directly contain any state information. And
 since I wanted to run queries like "Get all ZCTAs in a given state", I needed 
 to add that in. 
 
-I started by splitting out the first two characters of a County FIPS Code into 
+I started by splitting out the first two characters of each County FIPS Code into 
 a new column called `state_fips`. This allows a user to search for ZCTAs in a state if they know the state's FIPS code. 
 
 However, this does not help us if users want to select a state by it's name or Postal Code Abbreviation.
-To address this limitation I created a new dataframe called `state_names`, and use it to join against the results of `get_zcta_crosswalk`:
+To address this limitation I created a new dataframe called `state_names`, and used it to join against the results of `get_zcta_crosswalk`:
 
 ```{r}
 data(state_names)
@@ -116,7 +116,7 @@ much [larger](https://www.census.gov/library/reference/code-lists/ansi.html).
 
 The code I used to generate `state_names` is in `inst/gen_state_states.R`.
 
-Note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`), they cannot help us for two reasons: (1) they do not contain FIPS codes and (2) they only contain 50 states.
+Note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`), they cannot help us here because: (1) they do not contain FIPS codes and (2) they only contain 50 states.
 
 
 ## Learning About ZCTAs
@@ -131,12 +131,10 @@ One of my recollections from that meeting is Jon explaining that ZIP Codes are d
 Census geography, however, treats blocks as atomic. This means that all homes on a single block must have the same ZCTA. This 
 difference in construction means that ZIPs and ZCTAs are unlikely to ever truly be identical.
 
-Some other details that might interest people new to the field:
+## Closing Thoughts
 
- * Unlike States and Counties, ZCTAs do not "cover" the entire country. The full ZCTA map contains "holes".
- * ZCTAs frequently cross counties and sometimes even states. These cases appear as duplicate entries in `zcta_crosswalk`. (For example, six rows have ZCTA 39573).
- * The primary reason why `get_zctas_by_county` does not accept county names is that county names are not unique between states. (For example, 30 states have a "Washington County").
+My primary concern with this dataset is that people will assume that it is a present day crosswalk for ZIP Codes. As stated above, ZCTAs are not ZIP Codes. Additionally, this dataset was published in 2020, and it is not clear how many changes have occurred to ZIP Codes in the interim. 
 
 ## Funding
 
-I would like to thank my employer, [MarketBridge](https://market-bridge.com/), for supporting my development of this package. This package would not have been developed without their support.
+I would like to thank my employer, [MarketBridge](https://market-bridge.com/), for supporting the development of this package. This package would not have been developed without their support.

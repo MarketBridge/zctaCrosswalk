@@ -21,7 +21,7 @@ library(dplyr)
 ```
 
 `zctaCrosswalk` was designed to work well with the `tidycensus` package. 
-`tidycensus` is the most popular way to access Census data in R.
+`tidycensus` is currently the most popular way to access Census data in R.
 Here is an example of using it to get Median Household Income on
 all ZCTAs in the US:
 

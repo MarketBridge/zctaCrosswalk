@@ -112,5 +112,6 @@ The ZCTAs can be either character or numeric.
 ```{r}
 get_zcta_metadata("90210")
 
-get_zcta_metadata(c(90210, 90211))
+# Some ZCTAs span multiple counties
+get_zcta_metadata(39573)
 ```

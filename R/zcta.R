@@ -143,11 +143,12 @@ get_zctas_by_state = function(states) {
 #' state and county they are in. NOTE: A single ZCTA can span multiple
 #' states and counties.
 #'
-#' @param zctas A vector of ZCTAs
+#' @param zctas A vector of ZCTAs (character or numeric)
 #' @examples
 #' get_zcta_metadata("90210")
 #'
-#' get_zcta_metadata("39573")
+#' # Some ZCTAs span multiple counties
+#' get_zcta_metadata(39573)
 #' @export
 #' @importFrom dplyr filter
 get_zcta_metadata = function(zctas) {

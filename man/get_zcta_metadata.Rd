@@ -7,7 +7,7 @@
 get_zcta_metadata(zctas)
 }
 \arguments{
-\item{zctas}{A vector of ZCTAs}
+\item{zctas}{A vector of ZCTAs (character or numeric)}
 }
 \description{
 Given a vector of ZIP Code Tabulation Areas (ZCTAs), return what
@@ -17,5 +17,6 @@ states and counties.
 \examples{
 get_zcta_metadata("90210")
 
-get_zcta_metadata("39573")
+# Some ZCTAs span multiple counties
+get_zcta_metadata(39573)
 }
