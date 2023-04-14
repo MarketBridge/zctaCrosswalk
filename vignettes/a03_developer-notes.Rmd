@@ -114,7 +114,10 @@ a data frame like this for all FIPS codes. I did not break `state_fips` out
 into a separate package because even though it has 56 state-level entities, the full list is 
 much [larger](https://www.census.gov/library/reference/code-lists/ansi.html).
 
-Also note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`), they cannot help us for two reasons: (1) they do not contain FIPS codes and (2) they only contain 50 states.
+The code I used to generate `state_names` is in `inst/gen_state_states.R`.
+
+Note that while R has two built-in vectors that deal with state names (`state.abb` and `state.name`), they cannot help us for two reasons: (1) they do not contain FIPS codes and (2) they only contain 50 states.
+
 
 ## Learning About ZCTAs
 
