@@ -110,10 +110,6 @@ get_zctas_by_county = function(counties) {
 #' length(ca_ny_zctas)
 #' head(ca_ny_zctas)
 #'
-#' \dontrun{
-#' # But you can't mix types in a single request
-#' ny_ca_zctas = get_zctas_by_state(c("06", "NY"))
-#' }
 #' @export
 #' @importFrom dplyr filter pull sym
 #' @returns A vector, where each element is a ZCTA in the requested state.
