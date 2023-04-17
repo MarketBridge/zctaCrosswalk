@@ -2,7 +2,8 @@ Package: zctaCrosswalk
 Type: Package
 Title: Crosswalk Between 2020 Census ZIP Code Tabulation Areas (ZCTAs), States and Counties
 Version: 2.0.0
-Author: Ari Lamstein
+Authors@R: c(person("Ari Lamstein", role = c("aut", "cre"), email = "alamstein@market-bridge.com"),
+    person("MarketBridge LLC", role = c("cph", "fnd")))
 Maintainer: Ari Lamstein <alamstein@market-bridge.com>
 Description: Contains the US Census Bureau's 2020 ZCTA to County Relationship 
     File, as well as convenience functions to translate between States, Counties
