@@ -70,7 +70,7 @@ get_zctas_by_county = function(counties) {
     stop("User supplied bad data! Type 'get_zctas_by_county' to understand how this function works.")
   }
 
-  print(paste("Using column", col))
+  message(paste("Using column", col))
   zcta_crosswalk |>
     filter(!!sym(col) %in% counties) |>
     pull(.data$zcta) |>
@@ -129,7 +129,7 @@ get_zctas_by_state = function(states) {
     stop("User supplied bad data! Type 'get_zctas_by_state' to understand how this function works.")
   }
 
-  print(paste("Using column", col))
+  message(paste("Using column", col))
   zcta_crosswalk |>
     filter(!!sym(col) %in% states) |>
     pull(.data$zcta) |>
