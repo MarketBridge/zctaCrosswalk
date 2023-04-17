@@ -13,6 +13,7 @@ globalVariables("zcta_crosswalk")
 #' @importFrom rlang .data
 #' @importFrom stringr str_sub
 #' @export
+#' @returns A tibble, where each row is a (zcta, county, state) combination.
 get_zcta_crosswalk = function() {
 
   url = "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt"
@@ -57,6 +58,7 @@ get_zcta_crosswalk = function() {
 #' @importFrom utils data
 #' @importFrom dplyr pull filter
 #' @export
+#' @returns A vector, where each element is a ZCTA in the requested county.
 get_zctas_by_county = function(counties) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
@@ -114,6 +116,7 @@ get_zctas_by_county = function(counties) {
 #' }
 #' @export
 #' @importFrom dplyr filter pull sym
+#' @returns A vector, where each element is a ZCTA in the requested state.
 get_zctas_by_state = function(states) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 
@@ -151,6 +154,7 @@ get_zctas_by_state = function(states) {
 #' get_zcta_metadata(39573)
 #' @export
 #' @importFrom dplyr filter
+#' @returns A tibble, where each row is a (zcta, county, state) combination.
 get_zcta_metadata = function(zctas) {
   data("zcta_crosswalk", package = "zctaCrosswalk", envir = environment())
 

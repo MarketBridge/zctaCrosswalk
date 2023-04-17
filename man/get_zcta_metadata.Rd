@@ -9,6 +9,9 @@ get_zcta_metadata(zctas)
 \arguments{
 \item{zctas}{A vector of ZCTAs (character or numeric)}
 }
+\value{
+A tibble, where each row is a (zcta, county, state) combination.
+}
 \description{
 Given a vector of ZIP Code Tabulation Areas (ZCTAs), return what
 state and county they are in. NOTE: A single ZCTA can span multiple

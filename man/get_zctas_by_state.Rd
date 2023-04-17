@@ -9,6 +9,9 @@ get_zctas_by_state(states)
 \arguments{
 \item{states}{A vector of States. Can be FIPS Codes (either character or numeric), names or USPS abbreviations.}
 }
+\value{
+A vector, where each element is a ZCTA in the requested state.
+}
 \description{
 Given a vector of states, return the ZIP Code Tabulation Areas (ZCTAs)
 in those states.

@@ -6,6 +6,9 @@
 \usage{
 get_zcta_crosswalk()
 }
+\value{
+A tibble, where each row is a (zcta, county, state) combination.
+}
 \description{
 Returns the Census Bureau's 2020 ZCTA Country Relationship file
 as a tibble. This function is included so that users can see how the crosswalk
